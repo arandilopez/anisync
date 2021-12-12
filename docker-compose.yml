@@ -14,7 +14,7 @@ services:
     environment:
       - HISTFILE=/home/rails/webapp/log/.bash_history
     depends_on:
-      - db
+      - postgres
       - redis
 
   postgres:
