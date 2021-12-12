@@ -32,7 +32,6 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
-    container: ruby:3.0.3-slim-bullseye
     env:
       DATABASE_HOST: postgres
       DATABASE_USERNAME: postgres
@@ -43,11 +42,7 @@ jobs:
         image: postgres:13-alpine
         env:
           POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+        ports: ["5432:5432"]
 
     steps:
       - name: Checkout code
@@ -60,7 +55,6 @@ jobs:
 
       - name: Setup Node
         uses: actions/setup-node@v1
-        with:
 
       - name: Find yarn cache location
         id: yarn-cache
@@ -78,5 +72,10 @@ jobs:
         run: |
           yarn install --pure-lockfile
 
+      - name: Setup test database
+        run: |
+          bin/rails db:setup
+
       - name: Run unit tests
-        run: bin/rails test
+        run: |
+          bin/rails test
