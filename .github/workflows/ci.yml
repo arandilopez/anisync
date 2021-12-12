@@ -20,12 +20,12 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      # Add or Replace any other security checks here
+
       - name: Run security checks
         run: |
           bin/bundler-audit --update
           bin/brakeman -q -w2
-      # Add or Replace any other Linters here
+
       - name: Run linters
         run: |
           bin/rubocop --parallel
@@ -33,6 +33,11 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     container: ruby:3.0.3-slim-bullseye
+    env:
+      DATABASE_HOST: postgres
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_PORT: 5432
     services:
       postgres:
         image: postgres:13-alpine
@@ -43,11 +48,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    env:
-      DATABASE_HOST: postgres
-      DATABASE_USERNAME: postgres
-      DATABASE_PASSWORD: postgres
-      DATABASE_PORT: 5432
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -56,6 +57,26 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+
+      - name: Find yarn cache location
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Yarn package cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install yarn packages
+        run: |
+          yarn install --pure-lockfile
 
       - name: Run unit tests
         run: bin/rails test
