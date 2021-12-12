@@ -36,3 +36,7 @@ group :test do
   gem 'selenium-webdriver', '>= 4.0.0'
   gem 'webdrivers'
 end
+
+group :development do
+  gem "bundler-audit", require: false
+end
