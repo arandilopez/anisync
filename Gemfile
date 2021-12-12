@@ -27,6 +27,8 @@ group :development, :test do
 end
 
 group :development do
+  gem 'brakeman', '~> 5.1'
+  gem 'bundler-audit', require: false
   gem 'letter_opener'
   gem 'web-console', '>= 4.1.0'
 end
@@ -36,9 +38,3 @@ group :test do
   gem 'selenium-webdriver', '>= 4.0.0'
   gem 'webdrivers'
 end
-
-group :development do
-  gem "bundler-audit", require: false
-end
-
-gem "brakeman", "~> 5.1", :group => :development

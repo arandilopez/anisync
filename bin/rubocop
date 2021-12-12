@@ -2,7 +2,7 @@
 APP_ROOT = File.expand_path('..', __dir__)
 Dir.chdir(APP_ROOT) do
   begin
-    exec 'rubocop'
+    exec 'bundle exec rubocop'
   rescue Errno::ENOENT
     $stderr.puts "rubocop executable was not detected in the system."
     exit 1
