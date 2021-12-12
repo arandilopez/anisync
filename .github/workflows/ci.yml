@@ -33,6 +33,7 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
+    container: ruby:3.0.3-slim-bullseye
     services:
       postgres:
         image: postgres:13-alpine
