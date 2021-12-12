@@ -40,3 +40,5 @@ end
 group :development do
   gem "bundler-audit", require: false
 end
+
+gem "brakeman", "~> 5.1", :group => :development
