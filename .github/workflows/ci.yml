@@ -28,7 +28,7 @@ jobs:
           node-version: 16
           # cache: 'yarn'
 
-      - name: Install yarn packages
+      - name: Install Yarn packages
         run: |
           yarn install --pure-lockfile
 
@@ -75,7 +75,7 @@ jobs:
           node-version: 16
           # cache: 'yarn'
 
-      - name: Install yarn packages
+      - name: Install Yarn packages
         run: |
           yarn install --pure-lockfile
 
@@ -85,6 +85,6 @@ jobs:
           bin/rails db:migrate
           bin/rails db:seed
 
-      - name: Run unit tests
+      - name: Run Unit Tests
         run: |
           bin/rails test
