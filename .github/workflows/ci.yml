@@ -12,7 +12,7 @@ env:
 jobs:
   lint:
     name: Lint and Security
-    runs-on: ubuntu-latest
+    runs-on: ubuntu20
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
           bin/rubocop --parallel
   test:
     name: Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu20
     container: ruby:3.0.3
     env:
       ImageOS: ubuntu20
