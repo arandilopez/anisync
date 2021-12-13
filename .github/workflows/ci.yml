@@ -85,6 +85,10 @@ jobs:
           bin/rails db:migrate
           bin/rails db:seed
 
+      - name: Build assets
+        run: |
+          bin/rails assets:precompile
+
       - name: Run Unit Tests
         run: |
           bin/rails test
