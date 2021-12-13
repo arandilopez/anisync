@@ -13,23 +13,24 @@ jobs:
   lint:
     name: Lint and Security
     runs-on: ubuntu-latest
-    container: ruby:3.0.3
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Ruby Gems
-        uses: actions/cache@v2
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
+          bundler-cache: true
 
-      - name: Install gems
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Install yarn packages
         run: |
-          bundle config path vendor/bundle
-          bundle install --jobs $(nproc) --retry 3
+          yarn install --pure-lockfile
 
       - name: Run security checks
         run: |
@@ -42,7 +43,6 @@ jobs:
   test:
     name: Tests
     runs-on: ubuntu-latest
-    container: ruby:3.0.3
     services:
       postgres:
         image: postgres:13-alpine
@@ -51,23 +51,23 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: anisync_test
         ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache Ruby Gems
-        uses: actions/cache@v2
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
+      - name: Install dependent libraries
+        run: sudo apt-get install libpq-dev -yqq
 
-      - name: Install gems
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs $(nproc) --retry 3
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
 
       - name: Setup Node
         uses: actions/setup-node@v2
