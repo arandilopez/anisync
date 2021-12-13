@@ -12,15 +12,24 @@ env:
 jobs:
   lint:
     name: Lint and Security
-    runs-on: ubuntu20
+    runs-on: ubuntu-latest
+    container: ruby:3.0.3
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
+      - name: Cache Ruby Gems
+        uses: actions/cache@v2
         with:
-          bundler-cache: true
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Install gems
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs $(nproc) --retry 3
 
       - name: Run security checks
         run: |
@@ -32,7 +41,7 @@ jobs:
           bin/rubocop --parallel
   test:
     name: Tests
-    runs-on: ubuntu20
+    runs-on: ubuntu-latest
     container: ruby:3.0.3
     env:
       ImageOS: ubuntu20
@@ -49,10 +58,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
+      - name: Cache Ruby Gems
+        uses: actions/cache@v2
         with:
-          bundler-cache: true
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Install gems
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs $(nproc) --retry 3
 
       - name: Setup Node
         uses: actions/setup-node@v2
